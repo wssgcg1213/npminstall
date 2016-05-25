@@ -1,4 +1,14 @@
 
+1.8.3 / 2016-05-24
+==================
+
+  * fix: don't touch cache file when use sudo (#83)
+
+1.8.2 / 2016-05-10
+==================
+
+  * fix: utils.forceSymlink precheck dest dir exists (#82)
+
 1.8.1 / 2016-05-08
 ==================
 
