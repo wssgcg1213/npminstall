@@ -1,16 +1,4 @@
-/**
- * Copyright(c) cnpm and other contributors.
- * MIT Licensed
- *
- * Authors:
- *   fengmk2 <m@fengmk2.com> (http://fengmk2.com)
- */
-
 'use strict';
-
-/**
- * Module dependencies.
- */
 
 const assert = require('assert');
 const fs = require('mz/fs');
@@ -28,13 +16,13 @@ describe('test/index.test.js', function() {
     rimraf.sync(tmp);
   }
 
-  beforeEach(function*() {
+  beforeEach(function* () {
     cleanup();
     yield mkdirp(tmp);
   });
   afterEach(cleanup);
 
-  it('should npminstall with options.pkgs', function*() {
+  it('should npminstall with options.pkgs', function* () {
     yield npminstall({
       root: tmp,
       pkgs: [
@@ -46,7 +34,7 @@ describe('test/index.test.js', function() {
     });
   });
 
-  it('should npminstall not exists package throw error', function*() {
+  it('should npminstall not exists package throw error', function* () {
     try {
       yield npminstall({
         root: tmp,
@@ -60,7 +48,7 @@ describe('test/index.test.js', function() {
     }
   });
 
-  it('should npminstall demo project', function*() {
+  it('should npminstall demo project', function* () {
     const demodir = path.join(__dirname, 'fixtures', 'demo');
     rimraf.sync(path.join(demodir, 'node_modules'));
 
@@ -79,7 +67,7 @@ describe('test/index.test.js', function() {
     assert.equal(pkg.name, 'koa');
   });
 
-  it('should relink exists link file work', function*() {
+  it('should relink exists link file work', function* () {
     yield npminstall({
       root: tmp,
       pkgs: [
@@ -99,6 +87,37 @@ describe('test/index.test.js', function() {
     assert.equal(v1.version[0], '1');
   });
 
+  it('should request registry when not install from package.json', function* () {
+    yield npminstall({
+      root: tmp,
+      pkgs: [
+        { name: 'koa-onerror', version: '1.2.0' },
+      ],
+    });
+
+    const v1 = yield readJSON(path.join(tmp, 'node_modules', 'koa-onerror', 'package.json'));
+    assert.equal(v1.version, '1.2.0');
+
+    yield npminstall({
+      root: tmp,
+      pkgs: [
+        { name: 'koa-onerror', version: '1' },
+      ],
+    });
+
+    const v2 = yield readJSON(path.join(tmp, 'node_modules', 'koa-onerror', 'package.json'));
+    assert.equal(v2.version, '1.3.1');
+  });
+
+  it('should install chromedriver work', function* () {
+    yield npminstall({
+      root: tmp,
+      pkgs: [
+        { name: 'chromedriver' },
+      ],
+    });
+  });
+
   describe('_from, _resolved in package.json', function() {
     const root = path.join(__dirname, 'fixtures', 'packageMeta');
 
@@ -109,36 +128,24 @@ describe('test/index.test.js', function() {
     beforeEach(cleanup);
     afterEach(cleanup);
 
-    it('should add _from, _resolved to package.json', function*() {
+    it('should add _from, _resolved to package.json', function* () {
       yield npminstall({
-        root: root,
+        root,
       });
-      // node_modules/.npminstall/node_modules/ms should exists
-      assert(yield fs.exists(path.join(root, 'node_modules', '.npminstall', 'node_modules', 'ms')));
-      // node_modules/.npminstall/node_modules/debug should exists
-      assert(yield fs.exists(path.join(root, 'node_modules', '.npminstall', 'node_modules', 'debug')));
-      assert(yield fs.exists(path.join(root, 'node_modules', 'pedding')));
+      // node_modules/.debug@2.2.0 should exists
+      assert(yield fs.exists(path.join(root, 'node_modules', '.debug@2.2.0')));
 
       const debugPkg = yield readJSON(path.join(root, 'node_modules', 'debug', 'package.json'));
       assert.equal(debugPkg._from, 'debug@2.2.0');
       assert(debugPkg._resolved);
 
       const peddingPkg = yield readJSON(path.join(root, 'node_modules', 'pedding', 'package.json'));
-      assert.equal(peddingPkg._from, 'pedding@http://registry.cnpmjs.org/pedding/download/pedding-1.0.0.tgz');
-      assert.equal(peddingPkg._resolved, 'http://registry.cnpmjs.org/pedding/download/pedding-1.0.0.tgz');
+      assert.equal(peddingPkg._from, 'pedding@http://registry.npmjs.org/pedding/-/pedding-1.0.0.tgz');
+      assert.equal(peddingPkg._resolved, 'http://registry.npmjs.org/pedding/-/pedding-1.0.0.tgz');
 
       const bytesPkg = yield readJSON(path.join(root, 'node_modules', 'bytes', 'package.json'));
       assert.equal(bytesPkg._from, 'bytes@https://github.com/visionmedia/bytes.js.git');
       assert(/^https:\/\/github\.com\/visionmedia\/bytes\.js\.git#\w+$/.test(bytesPkg._resolved), bytesPkg._resolved);
-    });
-  });
-
-  it('should install chromedriver work', function*() {
-    yield npminstall({
-      root: tmp,
-      pkgs: [
-        { name: 'chromedriver' },
-      ],
     });
   });
 });

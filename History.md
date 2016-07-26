@@ -1,4 +1,61 @@
 
+2.0.0-beta.2 / 2016-07-26
+==================
+
+  * fix: global storeDir must ends with `node_modules` (#99)
+
+2.0.0-beta.1 / 2016-07-21
+==================
+
+  * refactor: remove .npminstall (#98)
+
+1.14.0 / 2016-07-17
+==================
+
+  * chore: adapte eslint-config-egg@3 (#96)
+  * feat: support uninstall (#95)
+
+1.13.0 / 2016-07-04
+==================
+
+  * feat: fetch from regsitry when not install from package.json (#94)
+
+1.12.1 / 2016-06-28
+==================
+
+  * fix: remove done file when install failed (#92)
+
+1.12.0 / 2016-06-26
+==================
+
+  * fix: add npm_execpath env in pre/post install script (#91)
+  * feat: support flow-bin mirror (#87)
+
+1.11.1 / 2016-06-26
+==================
+
+  * fix: forbidden licenses just show tips (#89)
+
+1.11.0 / 2016-06-23
+==================
+
+  * feat: support forbidden-license (#88)
+
+1.10.1 / 2016-05-25
+==================
+
+  * fix: remove console.error (#86)
+
+1.10.0 / 2016-05-25
+==================
+
+  * feat: support global install prefix argv (#85)
+
+1.9.0 / 2016-05-25
+==================
+
+  * feat: retry 3 times on shasum not match and 50x error (#84)
+
 1.8.3 / 2016-05-24
 ==================
 

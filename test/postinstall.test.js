@@ -1,16 +1,4 @@
-/**
- * Copyright(c) cnpm and other contributors.
- * MIT Licensed
- *
- * Authors:
- *   fengmk2 <m@fengmk2.com> (http://fengmk2.com)
- */
-
 'use strict';
-
-/**
- * Module dependencies.
- */
 
 const assert = require('assert');
 const rimraf = require('rimraf');
@@ -32,9 +20,9 @@ describe('test/postinstall.test.js', () => {
     beforeEach(cleanup);
     afterEach(cleanup);
 
-    it('should run preinstall, install, postinstall and prepublish', function*() {
+    it('should run preinstall, install, postinstall and prepublish', function* () {
       yield npminstall({
-        root: root,
+        root,
       });
       const pkg = yield readJSON(path.join(root, 'node_modules', 'utility', 'package.json'));
       assert.equal(pkg.name, 'utility');
@@ -56,16 +44,15 @@ describe('test/postinstall.test.js', () => {
 
     function cleanup() {
       rimraf.sync(path.join(root, 'build'));
-      rimraf.sync(path.join(root, '.npminstall'));
       rimraf.sync(path.join(root, 'node_modules'));
     }
 
     beforeEach(cleanup);
     afterEach(cleanup);
 
-    it('should auto run node-gyp rebuild', function*() {
+    it('should auto run node-gyp rebuild', function* () {
       yield npminstall({
-        root: root,
+        root,
       });
     });
   });

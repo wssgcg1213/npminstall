@@ -1,18 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * Copyright(c) cnpm and other contributors.
- * MIT Licensed
- *
- * Authors:
- *   fengmk2 <m@fengmk2.com> (http://fengmk2.com)
- */
-
 'use strict';
-
-/**
- * Module dependencies.
- */
 
 const debug = require('debug')('npminstall:bin:install');
 const co = require('co');
@@ -32,6 +20,8 @@ const argv = parseArgs(process.argv.slice(2), {
   string: [
     'root',
     'registry',
+    'prefix',
+    'forbidden-licenses',
   ],
   boolean: [
     'version',
@@ -92,6 +82,7 @@ Options:
   -r, --registry: specify custom registry
   -c, --china: specify in china, will automatically using chinses npm registry and other binary's mirrors
   --ignore-scripts: ignore all preinstall / install and postinstall scripts during the installation
+  --forbidden-licenses: forbit install packages which used these licenses
 `
   );
   process.exit(0);
@@ -111,6 +102,9 @@ if (production) {
   cacheDir = '';
 }
 
+let forbiddenLicenses = argv['forbidden-licenses'];
+forbiddenLicenses = forbiddenLicenses ? forbiddenLicenses.split(',') : null;
+
 // if in china, will automatic using chines registry and mirros.
 const inChina = argv.china || !!process.env.npm_china;
 
@@ -123,6 +117,9 @@ registry = registry || 'https://registry.npmjs.com';
 const env = {
   npm_config_registry: registry,
 };
+// https://github.com/npm/npm/blob/2005f4ce11f6cdf142f8a77f4f7ee4996000fb57/lib/utils/lifecycle.js#L67
+env.npm_node_execpath = env.NODE = process.env.NODE || process.execPath;
+env.npm_execpath = require.main.filename;
 
 if (inChina) {
   for (const key in config.chineseMirrorEnv) {
@@ -140,7 +137,7 @@ for (const key in argv) {
 
 debug('argv: %j, env: %j', argv, env);
 
-co(function*() {
+co(function* () {
   let binaryMirrors = {};
 
   if (inChina) {
@@ -155,12 +152,14 @@ co(function*() {
     cacheDir,
     env,
     binaryMirrors,
+    forbiddenLicenses,
   };
   config.strictSSL = getStrictSSL();
   config.ignoreScripts = argv['ignore-scripts'] || getIgnoreScripts();
   // -g install to npm's global prefix
   if (argv.global) {
-    const npmPrefix = getPrefix();
+    // support custom prefix for global install
+    const npmPrefix = argv.prefix || getPrefix();
     if (process.platform === 'win32') {
       config.targetDir = npmPrefix;
       config.binDir = npmPrefix;
@@ -185,7 +184,7 @@ co(function*() {
 
   process.on('exit', function(code) {
     if (code !== 0) {
-      fs.writeFileSync('npminstall-debug.log', util.inspect(config, {depth: 2}));
+      fs.writeFileSync('npminstall-debug.log', util.inspect(config, { depth: 2 }));
     }
   });
 }).catch(function(err) {
@@ -206,7 +205,7 @@ function getVersionSavePrefix() {
   try {
     return execSync('npm config get save-prefix').toString().trim();
   } catch (err) {
-    console.error(`exec npm config get save-prefix ERROR: ${err.message}`);
+    debug(`exec npm config get save-prefix ERROR: ${err.message}`);
     return '^';
   }
 }
@@ -216,7 +215,7 @@ function getStrictSSL() {
     const strictSSL = execSync('npm config get strict-ssl').toString().trim();
     return strictSSL !== 'false';
   } catch (err) {
-    console.error(`exec npm config get strict-ssl ERROR: ${err.message}`);
+    debug(`exec npm config get strict-ssl ERROR: ${err.message}`);
     return true;
   }
 }
@@ -226,7 +225,7 @@ function getIgnoreScripts() {
     const ignoreScripts = execSync('npm config get ignore-scripts').toString().trim();
     return ignoreScripts === 'true';
   } catch (err) {
-    console.error(`exec npm config get ignore-scripts ERROR: ${err.message}`);
+    debug(`exec npm config get ignore-scripts ERROR: ${err.message}`);
     return false;
   }
 }

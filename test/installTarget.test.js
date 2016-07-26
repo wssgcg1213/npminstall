@@ -1,16 +1,4 @@
-/**
- * Copyright(c) cnpm and other contributors.
- * MIT Licensed
- *
- * Authors:
- *   dead_horse <dead_horse@qq.com>
- */
-
 'use strict';
-
-/**
- * Module dependencies.
- */
 
 const assert = require('assert');
 const path = require('path');
@@ -34,14 +22,14 @@ describe('test/installTarget.test.js', function() {
 
   afterEach(cleanup);
 
-  it('should install to target dir', function*() {
+  it('should install to target dir', function* () {
     yield npminstall({
       root: tmp,
       targetDir: path.join(tmp, 'targetDir'),
       binDir: path.join(tmp, 'binDir'),
       pkgs: [
-        {name: 'koa', version: 'latest'},
-        {name: 'mocha', version: 'latest'},
+        { name: 'koa', version: 'latest' },
+        { name: 'mocha', version: 'latest' },
       ],
     });
 
@@ -49,7 +37,7 @@ describe('test/installTarget.test.js', function() {
     assert(pkg.name, 'koa');
     pkg = yield readJSON(path.join(tmp, 'targetDir/node_modules/mocha/package.json'));
     assert(pkg.name, 'mocha');
-    const pkgs = fs.readdirSync(path.join(tmp, 'targetDir/node_modules/.npminstall'));
+    const pkgs = fs.readdirSync(path.join(tmp, 'targetDir/node_modules/'));
     assert(pkgs.indexOf('koa') >= 0);
     assert(pkgs.indexOf('mocha') >= 0);
     const bins = fs.readdirSync(path.join(tmp, 'binDir'));

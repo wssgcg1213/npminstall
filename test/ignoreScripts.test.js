@@ -1,16 +1,4 @@
-/**
- * Copyright(c) cnpm and other contributors.
- * MIT Licensed
- *
- * Authors:
- *   dead_horse <dead_horse@qq.com>
- */
-
 'use strict';
-
-/**
- * Module dependencies.
- */
 
 const assert = require('assert');
 const path = require('path');
@@ -28,14 +16,14 @@ describe('test/ignoreScripts.test.js', function() {
   beforeEach(cleanup);
   afterEach(cleanup);
 
-  it('should ignore scripts', function*() {
+  it('should ignore scripts', function* () {
     yield npminstall({
-      root: root,
+      root,
       ignoreScripts: true,
     });
 
     const dirs = yield fs.readdir(path.join(root, 'node_modules'));
-    assert.deepEqual(dirs, [ '.npminstall', 'pkg' ]);
+    assert.deepEqual(dirs, [ '.pkg@1.0.0', 'pkg' ]);
     const files = yield fs.readdir(path.join(root, 'node_modules/pkg'));
     assert.deepEqual(files, [ '.npminstall.done', 'index.js', 'package.json' ]);
   });

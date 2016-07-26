@@ -1,16 +1,4 @@
-/**
- * Copyright(c) cnpm and other contributors.
- * MIT Licensed
- *
- * Authors:
- *   dead_horse <dead_horse@qq.com>
- */
-
 'use strict';
-
-/**
- * Module dependencies.
- */
 
 const npminstall = require('./npminstall');
 const rimraf = require('rimraf');
@@ -32,7 +20,7 @@ describe('test/linkRoot.test.js', function() {
 
   afterEach(cleanup);
 
-  it('should display error when post install', function*() {
+  it('should display error when post install', function* () {
     yield npminstall({
       root: tmp,
       pkgs: [
@@ -40,9 +28,9 @@ describe('test/linkRoot.test.js', function() {
         { name: 'es3ify-loader', version: '0.1.0' },
       ],
     });
-    let pkg = require(path.join(tmp, 'node_modules/.npminstall/node_modules/es3ify/package.json'));
+    let pkg = require(path.join(tmp, 'node_modules/es3ify/package.json'));
     assert.equal(pkg.version, '0.1.2');
-    pkg = require(path.join(tmp, 'node_modules/.npminstall/node_modules/es3ify-loader/package.json'));
+    pkg = require(path.join(tmp, 'node_modules/es3ify-loader/package.json'));
     assert.equal(pkg.version, '0.1.0');
   });
 });
